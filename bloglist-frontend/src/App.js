@@ -58,7 +58,13 @@ const App = () => {
     console.log("adding blog ",blogObject.title, blogObject.author)
     try {
       const returnedBlog = await blogService.create(blogObject)
-      setBlogs(blogs.concat(returnedBlog))
+
+      const succeedAddBlog = {
+        ...returnedBlog,
+        "user":user
+      }
+      
+      setBlogs(blogs.concat(succeedAddBlog))
       setNotiInfo([`a new blog ${blogObject.title} by ${blogObject.author} added`, 'fulfilled'])
       blogFormRef.current.toggleVisibility()
       setTimeout(() => {
