@@ -18,18 +18,19 @@ const App = () => {
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
-      setBlogs( blogs )
+      setBlogs( blogs.sort((a, b) => b.likes - a.likes) )
     )  
   }, [])
 
   useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem('loggedNoteappUser')
+    const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
       setUser(user)
       blogService.setToken(user.token)
     }
   }, [])
+
 
   const handleLogin = async  (event) => {
     event.preventDefault()
@@ -64,7 +65,7 @@ const App = () => {
         "user":user
       }
       
-      setBlogs(blogs.concat(succeedAddBlog))
+      await setBlogs(blogs.concat(succeedAddBlog))
       setNotiInfo([`a new blog ${blogObject.title} by ${blogObject.author} added`, 'fulfilled'])
       blogFormRef.current.toggleVisibility()
       setTimeout(() => {
@@ -102,11 +103,18 @@ const App = () => {
     window.localStorage.removeItem('loggedBlogappUser')
   }
 
+
   const updateBlog = async (blogid, blogObject) => {
     console.log("adding likes",blogObject.title, blogObject.author)
     try {
     const returnedBlog = await blogService.update(blogid,blogObject)
-    setBlogs(blogs.filter(blog => blog.id !== blogid).concat(returnedBlog))
+    //console.log('returnedBlog: ', returnedBlog)
+    const newBlogs = blogs.filter(blog => blog.id !== blogid).concat(returnedBlog)
+    //console.log("newBlogs: ", newBlogs)
+
+    const sortedBlog = await newBlogs.sort((a, b) => b.likes - a.likes)
+    setBlogs(sortedBlog)
+
     setNotiInfo([`Likes of ${blogObject.title} are increased`, 'fulfilled'])
     setTimeout(() => {
       setNotiInfo([])
@@ -117,7 +125,7 @@ const App = () => {
       setNotiInfo([])
     }, 5000)
   }}
-
+  console.log("before return: ", blogs)
   return (
     <div>
       {user === null && loginForm()}
@@ -130,6 +138,7 @@ const App = () => {
         <button onClick = {handleLogout} >logout</button>
       </p>
       {blogForm()}
+      
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} updateBlog={updateBlog} userid={user.id}/>
       )}

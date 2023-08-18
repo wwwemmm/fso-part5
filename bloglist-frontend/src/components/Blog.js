@@ -2,6 +2,7 @@ import { useState } from 'react'
 
 const Blog = ({blog, updateBlog, userid}) => {
   const [showDetail, setShowDetail] = useState(false) 
+  const [likes, setLikes] = useState(blog.likes)
 
   const blogStyle = {
     paddingTop: 10,
@@ -14,12 +15,13 @@ const Blog = ({blog, updateBlog, userid}) => {
 const increaseLike = async () => {
   const newBlog = {
     'user':userid,
-    'likes':blog.likes+1,
+    'likes': likes + 1,
     'author':blog.author,
     'title':blog.title,
     'url':blog.url
   }
   await updateBlog(blog.id, newBlog)
+  setLikes(likes+1)
 }
 
 return (
@@ -36,7 +38,7 @@ return (
     <button onClick={() => setShowDetail(!showDetail)}>hide</button>
     <p>{blog.url}</p>
     <p>
-      <span>likes {blog.likes}</span>
+      <span>likes {likes}</span>
       <button onClick = {increaseLike}>like</button>
     </p>
     <p>{blog.user.name}</p>
