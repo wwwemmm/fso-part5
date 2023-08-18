@@ -102,6 +102,22 @@ const App = () => {
     window.localStorage.removeItem('loggedBlogappUser')
   }
 
+  const updateBlog = async (blogid, blogObject) => {
+    console.log("adding likes",blogObject.title, blogObject.author)
+    try {
+    const returnedBlog = await blogService.update(blogid,blogObject)
+    setBlogs(blogs.filter(blog => blog.id !== blogid).concat(returnedBlog))
+    setNotiInfo([`Likes of ${blogObject.title} are increased`, 'fulfilled'])
+    setTimeout(() => {
+      setNotiInfo([])
+    }, 5000)
+  } catch (exception) {
+    setNotiInfo(['fail to increase likes', 'error'])
+    setTimeout(() => {
+      setNotiInfo([])
+    }, 5000)
+  }}
+
   return (
     <div>
       {user === null && loginForm()}
@@ -115,7 +131,7 @@ const App = () => {
       </p>
       {blogForm()}
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} updateBlog={updateBlog} userid={user.id}/>
       )}
       </div>
     }
