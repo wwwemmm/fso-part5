@@ -127,3 +127,39 @@ test('if the button is clicked twice, the event handler the componet received as
   expect(mockupdateBlog.mock.calls).toHaveLength(2)
 })
 
+test('the BlogForm call the prons.function with correct details', async() => {
+  const blog = {
+    'title':'Blog list tests, step1',
+    'author':'Full Stack Open',
+    'url':'https://fullstackopen.com/en/part5',
+    'likes':0,
+    'user':{
+      'username':'root',
+      'name':'Super User',
+      'id':'64ddca53179fef78b5747fef'
+    }
+  }
+  const mockcreateBlog = jest.fn()
+
+  const { container } = render(<BlogForm createBlog={mockcreateBlog}
+  />)
+
+  const mockuser = userEvent.setup()
+  const inputTitle = screen.getByPlaceholderText('write blog title here')
+  const inputAuthor = screen.getByPlaceholderText('write blog author here')
+  const inputUrl = screen.getByPlaceholderText('write blog url here')
+  const buttonCreate = screen.getByText('create')
+
+  //Don't foget await
+  await mockuser.type(inputTitle, 'This is title')
+  await mockuser.type(inputAuthor, 'This is author')
+  await mockuser.type(inputUrl, 'This is url')
+
+  await mockuser.click(buttonCreate)
+
+  expect(mockcreateBlog.mock.calls).toHaveLength(1)
+  //console.log('call content:', mockcreateBlog.mock.calls[0][0].title)
+  expect(mockcreateBlog.mock.calls[0][0].title).toBe('This is title')
+  expect(mockcreateBlog.mock.calls[0][0].author).toBe('This is author')
+  expect(mockcreateBlog.mock.calls[0][0].url).toBe('This is url')
+})
