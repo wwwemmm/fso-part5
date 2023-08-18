@@ -3,6 +3,7 @@ import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
 import Blog from './Blog'
 import userEvent from '@testing-library/user-event'
+import BlogForm from './BlogForm'
 
 test('renders content', () => {
   const user = {
@@ -89,4 +90,68 @@ test('details will be shown affter clicking the controlling button', async() => 
   )
 })
 
+test('if the button is clicked twice, the event handler the componet received as props is called twice', async() => {
+  const user = {
+    'username':'root',
+    'name':'Super User',
+    'id':'64ddca53179fef78b5747fef'
+  }
+  const blog = {
+    'title':'Blog list tests, step1',
+    'author':'Full Stack Open',
+    'url':'https://fullstackopen.com/en/part5',
+    'likes':0,
+    'user':{
+      'username':'root',
+      'name':'Super User',
+      'id':'64ddca53179fef78b5747fef'
+    }
+  }
+  const mockupdateBlog = jest.fn()
+  const mockdeleteBlog = jest.fn()
+
+  const { container } = render(<Blog blog={blog}
+    updateBlog={mockupdateBlog}
+    deleteBlog={mockdeleteBlog}
+    user={user}
+  />)
+
+  const mockuser = userEvent.setup()
+  const buttonView = screen.getByText('view')
+  await mockuser.click(buttonView)
+
+  const buttonLike =  screen.getByText('like')
+  await mockuser.click(buttonLike)
+  await mockuser.click(buttonLike)
+
+  expect(mockupdateBlog.mock.calls).toHaveLength(2)
+})
+
+test('when a new blog is added, the BlogForm call the event handler it receives with the right details', async() => {
+  const blog = {
+    'title':'Blog list tests, step1',
+    'author':'Full Stack Open',
+    'url':'https://fullstackopen.com/en/part5',
+    'likes':0,
+    'user':{
+      'username':'root',
+      'name':'Super User',
+      'id':'64ddca53179fef78b5747fef'
+    }
+  }
+  const mockcreateBlog = jest.fn()
+  const mockuser = userEvent.setup()
+  
+  const { container } = render(<BlogForm createBlog={mockcreateBlog}/>)
+
+  
+  const buttonView = screen.getByText('view')
+  await mockuser.click(buttonView)
+
+  const buttonLike =  screen.getByText('like')
+  await mockuser.click(buttonLike)
+  await mockuser.click(buttonLike)
+
+  expect(mockupdateBlog.mock.calls).toHaveLength(2)
+})
 
