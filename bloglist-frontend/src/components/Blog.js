@@ -33,7 +33,7 @@ const Blog = ({ blog, updateBlog, deleteBlog , user }) => {
 
   const showWhenIsCreator = { display: blog.user.id.toString()===user.id.toString() ? '' : 'none' }
   return (
-    <div style={blogStyle}>
+    <div style={blogStyle} className='blog'>
       {!showDetail &&
     <p>
       <span>{blog.title} {blog.author}</span>
