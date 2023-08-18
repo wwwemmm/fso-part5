@@ -14,7 +14,7 @@ const getAll = () => {
 }
 
 const create = async newObject => {
-
+  
   const config = {
     headers: { Authorization: token },
   }
@@ -36,4 +36,6 @@ const deleteBlog = (id) => {
   return response.data
 }
 
-export default {  getAll, create, update, setToken, deleteBlog }
+
+// eslint-disable-next-line import/no-anonymous-default-export
+export default {  getAll, create, update, setToken, deleteBlog}
