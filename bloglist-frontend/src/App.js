@@ -59,7 +59,7 @@ const App = () => {
     console.log("adding blog ",blogObject.title, blogObject.author)
     try {
       const returnedBlog = await blogService.create(blogObject)
-
+      //console.log("addBlog user:", user)
       const succeedAddBlog = {
         ...returnedBlog,
         "user":user
@@ -108,10 +108,12 @@ const App = () => {
     console.log("adding likes",blogObject.title, blogObject.author)
     try {
     const returnedBlog = await blogService.update(blogid,blogObject)
-    //console.log('returnedBlog: ', returnedBlog)
-    const newBlogs = blogs.filter(blog => blog.id !== blogid).concat(returnedBlog)
-    //console.log("newBlogs: ", newBlogs)
-
+    
+    const succeedUpdateBlog = {
+      ...returnedBlog,
+      "user":user
+    }
+    const newBlogs = blogs.filter(blog => blog.id !== blogid).concat(succeedUpdateBlog)
     const sortedBlog = await newBlogs.sort((a, b) => b.likes - a.likes)
     setBlogs(sortedBlog)
 
@@ -125,7 +127,27 @@ const App = () => {
       setNotiInfo([])
     }, 5000)
   }}
-  console.log("before return: ", blogs)
+  
+  const deleteBlog = async (blog) => {
+    console.log("deleting blog",blog.title, blog.author)
+    try {
+    await blogService.deleteBlog(blog.id)
+    const newBlogs = blogs.filter(b => b.id !== blog.id)
+    const sortedBlog = await newBlogs.sort((a, b) => b.likes - a.likes)
+    setBlogs(sortedBlog)
+
+    setNotiInfo([`${blog.title} is deleted`, 'fulfilled'])
+    setTimeout(() => {
+      setNotiInfo([])
+    }, 5000)
+  } catch (exception) {
+    setNotiInfo([`fail to delete ${blog.title}`, 'error'])
+    setTimeout(() => {
+      setNotiInfo([])
+    }, 5000)
+  }}
+
+
   return (
     <div>
       {user === null && loginForm()}
@@ -140,7 +162,7 @@ const App = () => {
       {blogForm()}
       
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} updateBlog={updateBlog} userid={user.id}/>
+        <Blog key={blog.id} blog={blog} updateBlog={updateBlog} deleteBlog={deleteBlog} user={user}/>
       )}
       </div>
     }

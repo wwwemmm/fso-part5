@@ -1,8 +1,7 @@
 import { useState } from 'react'
 
-const Blog = ({blog, updateBlog, userid}) => {
+const Blog = ({blog, updateBlog, deleteBlog , user}) => {
   const [showDetail, setShowDetail] = useState(false) 
-  const [likes, setLikes] = useState(blog.likes)
 
   const blogStyle = {
     paddingTop: 10,
@@ -14,16 +13,25 @@ const Blog = ({blog, updateBlog, userid}) => {
 
 const increaseLike = async () => {
   const newBlog = {
-    'user':userid,
-    'likes': likes + 1,
+    'user':blog.user.id,
+    'likes': blog.likes + 1,
     'author':blog.author,
     'title':blog.title,
     'url':blog.url
   }
   await updateBlog(blog.id, newBlog)
-  setLikes(likes+1)
 }
 
+const handleDelete = async () => {
+  if(window.confirm(`Remove blog ${blog.title} by ${blog.author}`)){
+    deleteBlog(blog)
+  }
+}
+
+console.log("blog.user.id:", blog.user.id)
+console.log("user.id", user.id)
+
+const showWhenIsCreator = { display: blog.user.id.toString()===user.id.toString() ? '' : 'none' }
 return (
   <div style={blogStyle}>
     {!showDetail && 
@@ -38,10 +46,13 @@ return (
     <button onClick={() => setShowDetail(!showDetail)}>hide</button>
     <p>{blog.url}</p>
     <p>
-      <span>likes {likes}</span>
+      <span>likes {blog.likes}</span>
       <button onClick = {increaseLike}>like</button>
     </p>
-    <p>{blog.user.name}</p>
+    <p>
+      <span>{blog.user.name}</span>
+      <button style={showWhenIsCreator} onClick={handleDelete}>remove</button>
+      </p>
     </div>
     }
   </div>  
