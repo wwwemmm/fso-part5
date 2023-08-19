@@ -195,7 +195,7 @@ describe('Blog app', function() {
     it('blogs are ordered according to likes', function(){
       cy.get('.view-button').eq(1).click()
       cy.get('.like').click()
-      cy.wait(1000)
+      cy.wait(2000)
       cy.get('.like').click()
       cy.contains('hide').click()
 
@@ -203,7 +203,7 @@ describe('Blog app', function() {
 
       cy.get('.view-button').eq(1).click()
       cy.get('.like').click()
-      cy.wait(1000)
+      cy.wait(2000)
       cy.contains('hide').click()
 
       cy.get('.blog').eq(0).contains('title root')
