@@ -37,7 +37,7 @@ const Blog = ({ blog, updateBlog, deleteBlog , user }) => {
       {!showDetail &&
     <p>
       <span>{blog.title} {blog.author}</span>
-      <button onClick={() => setShowDetail(!showDetail)}>view</button>
+      <button onClick={() => setShowDetail(!showDetail)} className='view-button'>view</button>
     </p>
       }
       {showDetail &&
@@ -47,11 +47,11 @@ const Blog = ({ blog, updateBlog, deleteBlog , user }) => {
       <p>{blog.url}</p>
       <p>
         <span>likes {blog.likes}</span>
-        <button onClick = {increaseLike}>like</button>
+        <button onClick = {increaseLike} className='like'>like</button>
       </p>
       <p>
         <span>{blog.user.name}</span>
-        <button style={showWhenIsCreator} onClick={handleDelete}>remove</button>
+        <button style={showWhenIsCreator} onClick={handleDelete} className='remove'>remove</button>
       </p>
     </div>
       }
