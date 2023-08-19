@@ -1,3 +1,4 @@
+/* eslint-disable cypress/no-unnecessary-waiting */
 describe('Blog app', function() {
   beforeEach(function() {
     cy.request('POST', 'http://localhost:3000/api/testing/reset')
@@ -128,17 +129,84 @@ describe('Blog app', function() {
       cy.get('.blog:last').contains('title root')
     })
 
-    it.only('the user can see the delete button of the blog it added', function(){
+    it('the user who created a blog can delete it', function(){
+      cy.get('.view-button').eq(1).click()
+      cy.get('.blog').eq(1)
+        .contains('Super User')
+        .get('.remove')
+        .should('exist')
+        .should('be.visible')
+        .click()
+      cy.get('.blog').should('have.length', 1)
+      cy.contains('titile root').should('not.exist')
+    })
+
+    it('only the creator can see the delete button of a blog, not anyone else', function(){
       cy.get('.view-button').eq(1).click()
       cy.get('.remove')
-        .should('exist')
-        .should('not.have.attr', 'style', 'display: none;')
+        .should('be.visible')
+        //.should('exist')
+        //.should('not.have.attr', 'style', 'display: none;')
       cy.contains('hide').click()
 
       cy.get('.view-button').eq(0).click()
       cy.get('.remove')
-        .should('exist')
-        .should('have.attr', 'style', 'display: none;')
+        .should('not.be.visible')
+        //.should('exist')
+        //.should('have.attr', 'style', 'display: none;')
+    })
+  })
+
+  describe('Blogs order', function(){
+    beforeEach(function() {
+      const user = {
+        name: 'Super User',
+        username: 'root',
+        password: 'secret'
+      }
+      cy.request('POST', 'http://localhost:3000/api/users/', user)
+
+      cy.contains('login').click()
+      cy.get('#username').type('mluukkai')
+      cy.get('#password').type('salainen')
+      cy.get('#login-button').click()
+      cy.get('[id="new blog"]').click()
+      cy.get('[placeholder="write blog title here"]').type('title mluukkai')
+      cy.get('[placeholder="write blog author here"]').type('author mluukkai')
+      cy.get('[placeholder="write blog url here"]').type('url mluukkai')
+      cy.contains('create').click()
+      cy.contains('a new blog title mluukkai by author mluukkai')
+      cy.get('.blog:last').contains('title mluukkai')
+
+      cy.contains('logout').click()
+      cy.contains('login').click()
+      cy.get('#username').type('root')
+      cy.get('#password').type('secret')
+      cy.get('#login-button').click()
+      cy.get('[id="new blog"]').click()
+      cy.get('[placeholder="write blog title here"]').type('title root')
+      cy.get('[placeholder="write blog author here"]').type('author root')
+      cy.get('[placeholder="write blog url here"]').type('url root')
+      cy.contains('create').click()
+      cy.contains('a new blog title root by author root')
+      cy.get('.blog:last').contains('title root')
+    })
+
+    it('blogs are ordered according to likes', function(){
+      cy.get('.view-button').eq(1).click()
+      cy.get('.like').click()
+      cy.wait(1000)
+      cy.get('.like').click()
+      cy.contains('hide').click()
+
+      cy.get('.blog').eq(0).contains('title root')
+
+      cy.get('.view-button').eq(1).click()
+      cy.get('.like').click()
+      cy.wait(1000)
+      cy.contains('hide').click()
+
+      cy.get('.blog').eq(0).contains('title root')
     })
   })
 })
